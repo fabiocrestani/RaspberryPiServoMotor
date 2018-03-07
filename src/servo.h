@@ -5,7 +5,6 @@
  *      Author: fabio
  */
 
-#include <stdio.h>
 #include <stdint.h>
 
 typedef struct ServoHandler {
@@ -14,7 +13,5 @@ typedef struct ServoHandler {
 	uint16_t position;
 } StServoHandler;
 
-void servoInit(StServoHandler servoHandler, uint8_t pin, uint16_t range,
-		uint16_t position);
-void servoUpdate(StServoHandler servoHandler, uint16_t newPosition);
-void servoWrite(StServoHandler servoHandler);
+void servoInit(StServoHandler servoHandler);
+void servoUpdate(StServoHandler servoHandler, uint16_t position);

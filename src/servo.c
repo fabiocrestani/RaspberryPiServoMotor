@@ -9,22 +9,14 @@
 #include <wiringPi.h>
 #include <softPwm.h>
 
-void servoInit(StServoHandler servoHandler, uint8_t pin, uint16_t range,
-		uint16_t position) {
-	servoHandler.pin = pin;
-	servoHandler.range = range;
-	servoHandler.position = position;
+void servoInit(StServoHandler servoHandler) {
 	pinMode(servoHandler.pin, PWM_OUTPUT);
 	digitalWrite(servoHandler.pin, LOW);
 	softPwmCreate(servoHandler.pin, servoHandler.position, servoHandler.range);
+	softPwmWrite(servoHandler.pin, 0);
 }
 
-void servoUpdate(StServoHandler servoHandler, uint16_t newPosition) {
-	servoHandler.position = newPosition;
-	servoWrite(servoHandler);
-}
-
-void servoWrite(StServoHandler servoHandler) {
+void servoUpdate(StServoHandler servoHandler, uint16_t position) {
+	servoHandler.position = position;
 	softPwmWrite(servoHandler.pin, servoHandler.position);
 }
-
