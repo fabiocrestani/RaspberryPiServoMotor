@@ -14,4 +14,5 @@ typedef struct ServoHandler {
 } StServoHandler;
 
 void servoInit(StServoHandler servoHandler);
+void servoInitAll(StServoHandler servoHandler);
 void servoUpdate(StServoHandler servoHandler, uint16_t position);
