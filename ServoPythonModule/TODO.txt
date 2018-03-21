@@ -1,0 +1,2 @@
+Rodar isso no Raspberry e instalar lá o módulo servo
+Depois é só usar no script python principal
