@@ -4,6 +4,8 @@
 #include <softPwm.h>
 #include <stdint.h>
 
+#define WIRINGPI_CODES 1 // mostrar códigos de retorno do wiringPiSetup()
+
 typedef struct ServoHandler {
 	uint8_t pin;
 	uint16_t range;
@@ -15,11 +17,13 @@ StServoHandler servoHandler;
 static PyObject *ServoError;
 static PyObject *servo_init(PyObject *self, PyObject *args);
 static PyObject *servo_update(PyObject *self, PyObject *args);
+static PyObject *servo_update2(PyObject *self, PyObject *args);
 
 // Lista dos métodos presentes neste módulo
 static PyMethodDef ServoMethods[] = {
 	{"init", servo_init, METH_VARARGS, "Inicializa o servo motor"},
 	{"update", servo_update, METH_VARARGS, "Atualiza a posição do servo motor"},	
+	{"update2", servo_update2, METH_VARARGS, "Atualiza a posição do servo motor"},	
 	{NULL, NULL, 0, NULL}
 };
 
@@ -52,18 +56,38 @@ Position: %d\n\r", servoHandler.pin, servoHandler.range, servoHandler.position);
 
 	if (ret < 0) {
 		PyErr_SetString(ServoError, "Init command failed");
-		return NULL;
+		return Py_BuildValue("i", ret);
 	}
+
+	pinMode(servoHandler.pin, PWM_OUTPUT);
+	digitalWrite(servoHandler.pin, LOW);
+	softPwmCreate(servoHandler.pin, servoHandler.position, servoHandler.range);
+	//softPwmWrite(servoHandler.pin, 0);
+
 	return Py_BuildValue("i", ret);
 }
 
 // Atualiza posição do servo motor 
 static PyObject *servo_update(PyObject *self, PyObject *args) {
 	if (!PyArg_ParseTuple(args, "i", &servoHandler.position)) {
-		return NULL;
+		return Py_BuildValue("i", 0);
 	}
 
 	printf("[C] Atualizando posição do servo para: %d\n\r", 
+		   servoHandler.position);
+	
+	softPwmWrite(servoHandler.pin, servoHandler.position);
+	return Py_BuildValue("i", 1);
+}
+
+// Atualiza posição do servo motor
+static PyObject *servo_update2(PyObject *self, PyObject *args) {
+	if (!PyArg_ParseTuple(args, "iii", &servoHandler.pin, &servoHandler.range, 
+									   &servoHandler.position)) {
+		return Py_BuildValue("i", 0);
+	}
+
+	printf("[C] 2 Atualizando posição do servo para: %d\n\r", 
 		   servoHandler.position);
 	
 	softPwmWrite(servoHandler.pin, servoHandler.position);
